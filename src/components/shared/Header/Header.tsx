@@ -2,11 +2,27 @@
 
 import Link from "next/link";
 import { Menu, ShoppingCart, User } from "lucide-react";
-import { JSX, useState } from "react";
+import { JSX, useState, useContext,  } from "react";
+import { AuthContext } from "@/Context/auth-context";
 
-export  function Header(): JSX.Element {
+export function Header(): JSX.Element {
+
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+  const { user, logout } = authContext;
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
+  
+ 
+  
+
+// Muestra un estado de carga o nada mientras se cargan los datos
+  // if (loading) {
+  //   return <div>Loading...</div>; 
+  // }
+ 
   return (
     <header className="bg-green-600 text-white">
       <div className="container mx-auto px-4 py-6 flex justify-between items-center">
@@ -33,18 +49,34 @@ export  function Header(): JSX.Element {
 
         {/* User Controls */}
         <div className="hidden md:flex items-center space-x-4">
-          <button className="hover:text-gray-200">
-            <ShoppingCart size={24} />
-          </button>
-          <button className="hover:text-gray-200">
-            <User size={24} />
-          </button>
-          <Link
-            href="/login"
-            className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
-          >
-            Iniciar Sesión / Registrarse
+          <Link href='/carrito'>
+            <button className="hover:text-gray-200">
+              <ShoppingCart size={24} />
+            </button>
           </Link>
+          <Link href='/profile'>
+            <button className="hover:text-gray-200">
+              <User size={24} />
+            </button>
+          </Link>
+          {user ? (
+            <>
+              <span className="text-white">{user.username}</span>
+              <button
+                onClick={logout}
+                className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
+              >
+                Cerrar Sesión
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
+            >
+              Iniciar Sesión / Registrarse
+            </Link>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -79,12 +111,24 @@ export  function Header(): JSX.Element {
               <button className="hover:text-gray-200">
                 <User size={24} />
               </button>
-              <Link
-                href="/login"
-                className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
-              >
-                Iniciar Sesión / Registrarse
-              </Link>
+              {user ? (
+                <>
+                  <span className="text-white">{user.username}</span>
+                  <button
+                    onClick={logout}
+                    className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
+                  >
+                    Cerrar Sesión
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
+                >
+                  Iniciar Sesión / Registrarse
+                </Link>
+              )}
             </div>
           </nav>
         </div>

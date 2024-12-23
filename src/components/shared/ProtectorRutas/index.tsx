@@ -1,0 +1,1 @@
+export {ProtectorRutas } from './ProtectorRutas'

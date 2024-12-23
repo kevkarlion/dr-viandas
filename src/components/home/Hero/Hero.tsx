@@ -5,6 +5,9 @@ import { Button } from "@/components/shared/Button";
 import { JSX } from "react";
 
 export  function Hero(): JSX.Element{
+
+
+  
   return (
     <section
       className="relative bg-cover bg-center py-20 text-white"

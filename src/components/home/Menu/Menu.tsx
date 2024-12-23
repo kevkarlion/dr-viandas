@@ -1,20 +1,8 @@
-import React from 'react';
-import { SingleMenu } from './SingleMenu';
+import React from "react";
+import { SingleMenu } from "./SingleMenu";
 
-type Dish = {
-  id: number;
-  chefImage: string;
-  dishName: string;
-  eventDate: string;
-  dishDetails: string;
-};
-
-type ChefSpecialSectionProps = {
-  dishes: Dish[];
-};
-
-
-export const Menu: React.FC<ChefSpecialSectionProps> = ({ dishes }) => {
+// Aquí definimos los tipos para el componente Menu (si lo necesitas)
+export const Menu: React.FC = () => {
   return (
     <section className="bg-gray-50 py-12">
       <div className="container mx-auto px-4">
@@ -22,20 +10,10 @@ export const Menu: React.FC<ChefSpecialSectionProps> = ({ dishes }) => {
           Platos del mes
         </h1>
         <div className="flex flex-col w-full gap-8">
-          {dishes.map((dish) => (
-            <SingleMenu
-              key={dish.id}
-              chefImage={dish.chefImage}
-              dishName={dish.dishName}
-              eventDate={dish.eventDate}
-              dishDetails={dish.dishDetails}
-             
-            />
-          ))}
+          {/* Aquí renderizamos el SingleMenu */}
+          <SingleMenu />
         </div>
       </div>
     </section>
   );
 };
-
-
