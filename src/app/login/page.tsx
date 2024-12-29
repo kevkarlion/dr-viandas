@@ -1,8 +1,18 @@
-"use client";
+'use client';
+
 import React, { useState, useContext } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/Context/auth-context";
+import axios, { AxiosError } from "axios";  // Importa axios
+
+interface ErrorResponse {
+  response: {
+    data: {
+      message: string;
+    };
+  };
+}
 
 export default function LoginPage() {
   const authContext = useContext(AuthContext);
@@ -10,43 +20,48 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const router = useRouter();
   const login = authContext?.login;
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
-      const response = await fetch(
-        "https://dr-viandas-bck.onrender.com/api/auth/local",
+      // Usando axios para hacer la petición POST
+      const response = await axios.post(
+        'http://localhost:5000/api/auth/login', 
         {
-          method: "POST",
+          email, 
+          password,
+        },
+        {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json", // Aseguramos que el tipo de contenido sea JSON
           },
-          body: JSON.stringify({ identifier: email, password }),
         }
       );
 
-      if (response.ok) {
-        const data = await response.json();
-
+      // Verificar si la respuesta es exitosa
+      if (response.status === 200) {
+        const token = response.data.token;
+        const userData = response.data.user.name;
+        const roleData = response.data.user.role
+        
+        // Si el contexto de autenticación está disponible, actualízalo
         if (login) {
-          login(data.jwt, data.user); // Actualiza el contexto con los datos del usuario
+          login(token, userData, roleData); // Actualiza el contexto con los datos del usuario
         }
-
         console.log("Inicio de sesión exitoso");
-        router.push("/");
+        console.log('rol', roleData);
+        // Redirigir al usuario a la página principal
+        router.push("/dashboard");
       } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.message}`);
+        console.error("Error al iniciar sesión: Código de estado inesperado", response.status);
+        alert('Hubo un error al iniciar sesión. Por favor, inténtalo de nuevo.');
       }
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      alert("Hubo un error al iniciar sesión. Por favor, inténtalo de nuevo.");
+      const axiosError = error as AxiosError<ErrorResponse>;
+      console.error("Error al iniciar sesión:", axiosError);
+     
     }
   };
-
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -71,13 +86,13 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
             />
           </div>
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium  mb-1 text-black"
             >
               Contraseña
             </label>
@@ -87,7 +102,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
             />
           </div>
           <button

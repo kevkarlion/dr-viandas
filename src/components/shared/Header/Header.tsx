@@ -11,7 +11,7 @@ export function Header(): JSX.Element {
   if (!authContext) {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
-  const { user, logout } = authContext;
+  const { jwt, logout, user } = authContext;
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   
@@ -24,7 +24,7 @@ export function Header(): JSX.Element {
   // }
  
   return (
-    <header className="bg-green-600 text-white">
+    <header className="bg-green-600 text-white fixed top-0 w-full z-50">
       <div className="container mx-auto px-4 py-6 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="text-2xl font-bold">
@@ -59,9 +59,9 @@ export function Header(): JSX.Element {
               <User size={24} />
             </button>
           </Link>
-          {user ? (
+          {jwt ? (
             <>
-              <span className="text-white">{user.username}</span>
+              <span className="text-white">{user}</span>
               <button
                 onClick={logout}
                 className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
@@ -113,7 +113,7 @@ export function Header(): JSX.Element {
               </button>
               {user ? (
                 <>
-                  <span className="text-white">{user.username}</span>
+                  <span className="text-white">{user}</span>
                   <button
                     onClick={logout}
                     className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"

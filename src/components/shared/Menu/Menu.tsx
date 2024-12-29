@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 // import axios from "axios";
 import Image from "next/image";
-import axiosInstance from '@/lib/axios'
+import axiosInstance from '@/services/axios'
 // import { MenuSquare } from "lucide-react";
 
 // Definir tipos para los menús

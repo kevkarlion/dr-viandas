@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { User, Pencil, X, Check } from "lucide-react";
 import { ProtectorRutas } from "@/components/shared/ProtectorRutas/ProtectorRutas";
+import { AuthContext } from "@/Context/auth-context";
 
 interface UserData {
   name: string;
@@ -25,6 +26,12 @@ export default function UserProfile({
 }: {
   initialUserData?: UserData;
 }) {
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+  const { user  } = authContext;
+  console.log('usuario',user)
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState<UserData>(initialUserData);
 
@@ -83,10 +90,10 @@ export default function UserProfile({
                 id="name"
                 name="name"
                 type="text"
-                value={userData.name}
+                value={user ? user.username : ''}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 text-black pl-2" 
               />
             </div>
             <div>
@@ -100,10 +107,10 @@ export default function UserProfile({
                 id="email"
                 name="email"
                 type="email"
-                value={userData.email}
+                value={user ? user.email : ''}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 text-black pl-2"
               />
             </div>
             <div>
@@ -117,7 +124,7 @@ export default function UserProfile({
                 id="phone"
                 name="phone"
                 type="tel"
-                value={userData.phone}
+                value={ user ? userData.phone : ''}
                 onChange={handleInputChange}
                 disabled={!isEditing}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100"
@@ -134,7 +141,7 @@ export default function UserProfile({
                 id="address"
                 name="address"
                 type="text"
-                value={userData.address}
+                value={user ? userData.address : ''}
                 onChange={handleInputChange}
                 disabled={!isEditing}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100"
@@ -151,7 +158,7 @@ export default function UserProfile({
                 id="dietaryPreferences"
                 name="dietaryPreferences"
                 type="text"
-                value={userData.dietaryPreferences}
+                value={user ? userData.dietaryPreferences: ''}
                 onChange={handleInputChange}
                 disabled={!isEditing}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100"

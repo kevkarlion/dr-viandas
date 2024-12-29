@@ -1,13 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { AuthContext } from "@/Context/auth-context"
+import axios from 'axios'  // Importar Axios
 
 export default function RegistroPage() {
-  const [username, setUsername] = useState('') // Cambié 'nombre' por 'username'
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+  const { jwt, setJwt, user, setUser } = authContext;
+
   const [confirmPassword, setConfirmPassword] = useState('')
   const router = useRouter()
 
@@ -21,26 +30,35 @@ export default function RegistroPage() {
     }
 
     try {
-      // Enviar datos a Strapi (enviando username en vez de nombre)
-      const response = await fetch(`https://dr-viandas-bck.onrender.com/api/auth/local/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password }), // Cambié 'nombre' por 'username'
+      // Usando Axios para hacer la solicitud POST
+      const response = await axios.post('http://localhost:5000/api/auth/signup', {
+        name,
+        email,
+        password,
       })
 
-      // Verificar la respuesta de Strapi
-      if (response.ok) {
-        console.log('Usuario registrado con éxito')
+      // Verificar si la respuesta es exitosa
+      if (response.status === 201) {
+        // Obtener el token de la respuesta (ajusta según la estructura de tu respuesta)
+        const token = response.data.token
+        const userCustomer = response.data.user.name
+        console.log(userCustomer)
+        setUser(userCustomer)
+        setJwt(token)
+         // Almacenar el token en localStorage
+        console.log('Usuario registrado con éxito', response)
+        localStorage.setItem('token', jwt || '')
+        localStorage.setItem('user', JSON.stringify(user))
+        console.log(user)
         router.push('/dashboard') // Redirigir al dashboard o a la página deseada
-      } else {
-        const errorData = await response.json() // Analizar la respuesta JSON si no es ok
-        alert(`Error: ${errorData.message}`)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al registrar el usuario:', error)
-      alert('Hubo un error al registrar el usuario. Por favor, inténtalo de nuevo.')
+      if (error.response) {
+        alert(`Error: ${error.response.data.message}`)
+      } else {
+        alert('Hubo un error al registrar el usuario. Por favor, inténtalo de nuevo.')
+      }
     }
   }
 
@@ -51,17 +69,17 @@ export default function RegistroPage() {
         <p className="text-center text-gray-600 mb-6">Regístrate para empezar a pedir tus viandas favoritas</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1"> {/* Cambié 'nombre' por 'username' */}
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
               Nombre completo
             </label>
             <input
               id="username"
               type="text"
               placeholder="Juan Pérez"
-              value={username}  // Cambié 'nombre' por 'username'
-              onChange={(e) => setUsername(e.target.value)}  // Cambié 'nombre' por 'username'
+              value={name}  
+              onChange={(e) => setName(e.target.value)}  
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
             />
           </div>
           <div>
@@ -75,7 +93,7 @@ export default function RegistroPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
             />
           </div>
           <div>
@@ -88,7 +106,7 @@ export default function RegistroPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
             />
           </div>
           <div>
@@ -101,7 +119,7 @@ export default function RegistroPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
             />
           </div>
           <button
