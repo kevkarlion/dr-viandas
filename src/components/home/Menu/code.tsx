@@ -23,49 +23,39 @@ export const SingleMenu: React.FC = () => {
   const authContext = useContext(AuthContext);
   const router = useRouter();
 
-  
-
   if (!authContext) {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
 
   const { user } = authContext;
-  
-  const storedDishes = localStorage.getItem("dishes");
-  console.log(dishes)
-  
+
   useEffect(() => {
     const storedDishes = localStorage.getItem("dishes");
-  
     if (storedDishes) {
-      // Si ya existen platos en el localStorage, se cargan desde ahí
-      setDishes(JSON.parse(storedDishes)); // Corregido el parse
-      setIsLoading(false)
+      setDishes(JSON.parse(storedDishes));
+      setIsLoading(false);
     } else {
-      // Si no existen platos en localStorage, se hace la petición a la API
       axiosInstance
         .get("http://localhost:5000/api/dishes")
         .then((response) => {
-          console.log(response.data);
+          console.log(response.data)
           const fetchedDishes = response.data.map((dish: any) => ({
             id: dish._id, // Mapear `_id` a `id`
             name: dish.name,
             description: dish.description,
             price: dish.price,
-            photo: dish.photo, // Usar `photo` en lugar de `image`
+            photo: dish.photo, // Ajustar para usar `photo`
             available: dish.available,
           }));
-          setDishes(fetchedDishes);
-          localStorage.setItem("dishes", JSON.stringify(fetchedDishes)); // Guardar en localStorage
+           setDishes(fetchedDishes);
+           localStorage.setItem("dishes", JSON.stringify(fetchedDishes));
         })
         .catch((error) => {
           console.error("Error fetching dishes:", error);
         })
-        .finally(() => setIsLoading(false)); // Finalmente, desactivar el loading
+        .finally(() => setIsLoading(false));
     }
-  }, []); // El array vacío asegura que se ejecute solo una vez al cargar el componente
-  
-
+  }, []);
 
   const agregarAlCarrito = (dish: DishItem) => {
     if (!user) {
@@ -97,14 +87,14 @@ export const SingleMenu: React.FC = () => {
   }
 
   return (
-
+    <div></div>
      <div className="flex flex-col gap-8">
        {dishes.map((dish) => (
          <div
          key={dish.id}
           className="flex flex-col md:flex-row bg-white shadow-lg rounded-lg overflow-hidden"
          >
-           {/* <div className="w-full md:w-1/3 h-[12rem] md:h-auto relative">
+           <div className="w-full md:w-1/3 h-[12rem] md:h-auto relative">
              <Image
                src={dish.photo}
                alt={dish.name}
@@ -112,7 +102,7 @@ export const SingleMenu: React.FC = () => {
                objectFit="cover"
                priority
              />
-           </div> */}
+           </div>
            <div className="w-full md:w-2/3 p-6 flex flex-col justify-between">
              <div>
                <h2 className="text-2xl font-bold text-gray-800">{dish.name}</h2>

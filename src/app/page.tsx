@@ -11,7 +11,7 @@ const Page = ( ) => {
       <Hero />
       <Features />
       <AboutMe />
-      {/* <Menu /> */}
+      <Menu />
     </>
   );
 }
