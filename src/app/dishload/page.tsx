@@ -58,7 +58,7 @@ const Dishload = () => {
   return (
       <ProtectorRutasRole >
             
-            <div className="max-w-lg mx-auto  p-6 bg-white shadow-lg rounded-lg">
+            <div className="max-w-lg my-32 mx-7 p-6 bg-white shadow-lg rounded-lg">
                   <h2 className="text-xl font-semibold mb-4">Cargar Platillo</h2>
                   <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
@@ -68,7 +68,7 @@ const Dishload = () => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                        className="w-full p-2 border border-gray-300 rounded-md text-black"
                   />
                   </div>
 
@@ -79,7 +79,7 @@ const Dishload = () => {
                         value={price}
                         onChange={(e) => setPrice(Number(e.target.value))}
                         required
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                        className="w-full p-2 border border-gray-300 rounded-md text-black"
                   />
                   </div>
 
@@ -89,12 +89,12 @@ const Dishload = () => {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         required
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                        className="w-full p-2 border border-gray-300 rounded-md text-black"
                   />
                   </div>
 
                   <div>
-                  <label className="block text-sm font-medium text-gray-700">Ingredientes</label>
+                  <label className="block text-sm font-medium  text-black">Ingredientes</label>
                   <input
                         type="text"
                         value={ingredients}
