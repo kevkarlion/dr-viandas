@@ -27,6 +27,7 @@ export const SingleMenu: React.FC = () => {
   
 
   if (!authContext) {
+    console.log('contexto auth')
     throw new Error("AuthContext must be used within an AuthProvider");
   }
 
@@ -60,39 +61,7 @@ export const SingleMenu: React.FC = () => {
 
 
   
-  
-  // useEffect(() => {
 
-  //   const storedDishes = localStorage.getItem("dishes");
-  
-  //   if (storedDishes) {
-  //     // Si ya existen platos en el localStorage, se cargan desde ahí
-  //     setDishes(JSON.parse(storedDishes)); // Corregido el parse
-  //     setIsLoading(false)
-  //   } else {
-  //     // Si no existen platos en localStorage, se hace la petición a la API
-  //     axiosInstance
-  //       .get("http://localhost:5000/api/dishes")
-  //       .then((response) => {
-  //         console.log(response.data);
-  //         const fetchedDishes = response.data.map((dish: any) => ({
-  //           id: dish._id, // Mapear `_id` a `id`
-  //           name: dish.name,
-  //           description: dish.description,
-  //           price: dish.price,
-  //           photo: dish.photo, // Usar `photo` en lugar de `image`
-  //           available: dish.available,
-  //         }));
-  //         setDishes(fetchedDishes);
-  //         localStorage.setItem("dishes", JSON.stringify(fetchedDishes)); // Guardar en localStorage
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching dishes:", error);
-  //       })
-  //       .finally(() => setIsLoading(false)); // Finalmente, desactivar el loading
-  //   }
-  // }, []); // El array vacío asegura que se ejecute solo una vez al cargar el componente
-  
 
 
   const agregarAlCarrito = (dish: DishItem) => {
