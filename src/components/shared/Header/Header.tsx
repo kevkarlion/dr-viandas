@@ -61,7 +61,7 @@ export function Header(): JSX.Element {
           </Link>
           {jwt ? (
             <>
-              <span className="text-white">{user}</span>
+              <span className="text-white">{user.name}</span>
               <button
                 onClick={logout}
                 className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
@@ -113,7 +113,7 @@ export function Header(): JSX.Element {
               </button>
               {user ? (
                 <>
-                  <span className="text-white">{user}</span>
+                  <span className="text-white">{user.name}</span>
                   <button
                     onClick={logout}
                     className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"

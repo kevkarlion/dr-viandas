@@ -2,6 +2,23 @@
 
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 
+interface CartItem {
+  dishId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  _id: string;
+}
+
+interface CartDb {
+  _id: string;
+  userId:string;
+  items: CartItem[];
+  name: string
+}
+
+
+
 
 
 // Definir los tipos para el contexto
@@ -15,7 +32,10 @@ interface AuthContextType {
   loading: boolean;
   role: string | null;
   setRole: React.Dispatch<React.SetStateAction<string | null>>;
+  cart: CartDb ;
+  setCart: React.Dispatch<React.SetStateAction<CartDb>>;
 }
+
 
 // Crear el contexto
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,20 +52,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [jwt, setJwt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<string | null>('');
+  const [cart, setCart] = useState<CartDb>({ _id: '', userId: '', items: [], name: '' });
   
   // Recuperar el usuario y JWT del localStorage cuando la app se carga
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const storedJwt = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role');
+    
 
     console.log(storedUser)
     console.log(storedJwt)
 
-    if (storedUser && storedJwt && storedRole) {
+    if (storedUser && storedJwt && storedRole ) {
       setUser(JSON.parse(storedUser));
       setJwt(storedJwt);
       setRole(JSON.parse(storedRole))
+      
     }
     setLoading(false); // Indica que los datos ya están cargados
   }, []);
@@ -55,10 +78,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.setItem('token', jwt);
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('role', JSON.stringify(role))
+    
     setRole(role);
     setUser(user);
     setJwt(jwt);
     setLoading(false); // Datos cargados
+    
+
   };
 
   // Función para logout
@@ -70,7 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser , jwt, setJwt, login , logout, loading, role, setRole}}>
+    <AuthContext.Provider value={{ user, setUser , jwt, setJwt, login , logout, loading, role, setRole, cart, setCart}}>
       {children}
     </AuthContext.Provider>
   );

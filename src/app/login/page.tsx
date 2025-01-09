@@ -19,7 +19,9 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const setCart = authContext?.setCart;
   const login = authContext?.login;
+ 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,8 +42,20 @@ export default function LoginPage() {
 
       // Verificar si la respuesta es exitosa
       if (response.status === 200) {
+        console.log('respuesta de login',response.data)
         const token = response.data.token;
-        const userData = response.data.user.name;
+
+        //carrito cargado en el local storage y en el contexto de autenticación al inicar sesión
+        if (setCart) {
+          setCart(response.data.cart);
+          localStorage.setItem('cart', JSON.stringify(response.data.cart));
+        }
+        console.log('carrito', response.data.cart);
+        const userData = {
+          id: response.data.user.id,
+          name: response.data.user.name,
+          email: response.data.user.email,
+        };
         const roleData = response.data.user.role
         
         // Si el contexto de autenticación está disponible, actualízalo

@@ -15,7 +15,7 @@ export default function RegistroPage() {
   if (!authContext) {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
-  const { jwt, setJwt, user, setUser } = authContext;
+  const { jwt, setJwt, user, setUser, cart, setCart } = authContext;
 
   const [confirmPassword, setConfirmPassword] = useState('')
   const router = useRouter()
@@ -45,10 +45,13 @@ export default function RegistroPage() {
         console.log(userCustomer)
         setUser(userCustomer)
         setJwt(token)
+        setCart(response.data.cart)
+        console.log('soy el carrito creado',cart)
          // Almacenar el token en localStorage
         console.log('Usuario registrado con éxito', response)
         localStorage.setItem('token', jwt || '')
         localStorage.setItem('user', JSON.stringify(user))
+        localStorage.setItem('cart', JSON.stringify(cart))
         console.log(user)
         router.push('/dashboard') // Redirigir al dashboard o a la página deseada
       }
