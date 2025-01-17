@@ -49,6 +49,7 @@ export default function LoginPage() {
         if (setCart) {
           setCart(response.data.cart);
           localStorage.setItem('cart', JSON.stringify(response.data.cart));
+          console.log(response.data.cart)
         }
         console.log('carrito', response.data.cart);
         const userData = {

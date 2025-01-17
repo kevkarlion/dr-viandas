@@ -5,6 +5,7 @@ import { Trash2, Plus, Minus } from "lucide-react";
 import Image from "next/image";
 import { ProtectorRutas } from "@/components/shared/ProtectorRutas/ProtectorRutas";
 import { AuthContext } from "@/Context/auth-context";
+import { updateCartQuantity, removeCartItem } from "@/services/cartService";
 
 export default function Carrito() {
   const authContext = useContext(AuthContext);
@@ -15,7 +16,7 @@ export default function Carrito() {
 
   const { cart, setCart } = authContext;
 
-  console.log('carrito desde ruta /carrito', cart)
+  console.log("carrito desde ruta /carrito", cart);
 
   // Estado local del carrito
   const [localCart, setLocalCart] = useState(cart);
@@ -39,6 +40,9 @@ export default function Carrito() {
     localStorage.setItem("cart", JSON.stringify(localCart));
   }, [localCart]);
 
+  console.log("cart ", cart);
+  console.log("localCart contiene", localCart);
+
   // Actualizar cantidad de un producto en el carrito local
   const handleUpdateQuantity = (dishId: string, change: number) => {
     const updatedItems = localCart.items.map((item) =>
@@ -47,13 +51,37 @@ export default function Carrito() {
         : item
     );
     const updatedCart = { ...localCart, items: updatedItems };
+
+    const localUserIdCart: string = localCart.userId;
+    
+    // Actualizar el carrito en la base de datos
+    updateCartQuantity(localUserIdCart, dishId, change);
+
+    // Actualizar el carrito en la base de datos
+
+    console.log(
+      "localUserIdCart",
+      localUserIdCart,
+      "dishId ",
+      dishId,
+      "change",
+      change
+    );
+
     setLocalCart(updatedCart);
+
     setCart(updatedCart); // Sincronizar inmediatamente con el contexto global
   };
 
   // Eliminar un producto del carrito local
   const handleRemoveItem = (dishId: string) => {
-    const updatedItems = localCart.items.filter((item) => item.dishId !== dishId);
+    // Eliminar el producto del carrito en la base de datos
+    const localUserIdCart: string = localCart.userId;
+    removeCartItem(localUserIdCart, dishId);
+
+    const updatedItems = localCart.items.filter(
+      (item) => item.dishId !== dishId
+    );
     const updatedCart = { ...localCart, items: updatedItems };
 
     setLocalCart(updatedCart);
@@ -140,9 +168,7 @@ export default function Carrito() {
                     <span className="text-black">${total.toFixed(2)}</span>
                   </div>
                 </div>
-                <button
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg mt-4 hover:bg-blue-700 transition duration-300"
-                >
+                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg mt-4 hover:bg-blue-700 transition duration-300">
                   Proceder al Pago
                 </button>
               </div>

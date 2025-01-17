@@ -7,14 +7,15 @@ interface CartItem {
   name: string;
   quantity: number;
   price: number;
-  _id: string;
+  
 }
 
 interface CartDb {
   _id: string;
   userId:string;
   items: CartItem[];
-  name: string
+  name: string,
+  
 }
 
 
