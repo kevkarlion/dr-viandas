@@ -60,16 +60,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const storedUser = localStorage.getItem('user');
     const storedJwt = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role');
+    const storedCart = localStorage.getItem('cart');
     
 
     console.log(storedUser)
     console.log(storedJwt)
 
-    if (storedUser && storedJwt && storedRole ) {
+    if (storedUser && storedJwt && storedRole && storedCart) {
       setUser(JSON.parse(storedUser));
       setJwt(storedJwt);
       setRole(JSON.parse(storedRole))
-      
+      setCart(JSON.parse(storedCart))
     }
     setLoading(false); // Indica que los datos ya están cargados
   }, []);
