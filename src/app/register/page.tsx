@@ -15,7 +15,7 @@ export default function RegistroPage() {
   if (!authContext) {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
-  const { jwt, setJwt, user, setUser, cart, setCart } = authContext;
+  const {  setCart, register } = authContext;
 
   const [confirmPassword, setConfirmPassword] = useState('')
   const router = useRouter()
@@ -41,18 +41,27 @@ export default function RegistroPage() {
       if (response.status === 201) {
         // Obtener el token de la respuesta (ajusta según la estructura de tu respuesta)
         const token = response.data.token
-        const userCustomer = response.data.user.name
-        console.log(userCustomer)
-        setUser(userCustomer)
-        setJwt(token)
-        setCart(response.data.cart)
-        console.log('soy el carrito creado',cart)
-         // Almacenar el token en localStorage
-        console.log('Usuario registrado con éxito', response)
-        localStorage.setItem('token', jwt || '')
-        localStorage.setItem('user', JSON.stringify(user))
-        localStorage.setItem('cart', JSON.stringify(cart))
-        console.log(user)
+
+        const userData = {
+          id: response.data.user.id,
+          name: response.data.user.name,
+          email: response.data.user.email,
+        };
+        
+        //carrito cargado en el local storage y en el contexto de autenticación al registrarse
+        if (setCart) {
+          setCart(response.data.cart);
+          localStorage.setItem('cart', JSON.stringify(response.data.cart));
+          console.log(response.data.cart)
+        }
+        console.log('carrito', response.data.cart);
+        console.log('userData', userData)
+        // Si el contexto de autenticación está disponible, actualízalo
+        if (register) {
+          console.log('register ok')
+          register(token, userData); // Actualiza el contexto con los datos del usuario
+        } 
+        console.log('soy usuario',response.data.user)
         router.push('/dashboard') // Redirigir al dashboard o a la página deseada
       }
     } catch (error: any) {

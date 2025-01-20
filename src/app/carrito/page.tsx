@@ -54,6 +54,8 @@ export default function Carrito() {
 
     const localUserIdCart: string = localCart.userId;
     
+
+    console.log('datos desde function update',"localUserIdCart", localUserIdCart, "dishId ", dishId, "change", change);
     // Actualizar el carrito en la base de datos
     updateCartQuantity(localUserIdCart, dishId, change);
 

@@ -29,6 +29,7 @@ interface AuthContextType {
   jwt: string | null;
   setJwt: React.Dispatch<React.SetStateAction<string | null>>;
   login: (jwt: string, user: { id: string; name: string; email: string }, role: string) => void;
+  register: (jwt: string, user: { id: string; name: string; email: string }) => void;
   logout: () => void;
   loading: boolean;
   role: string | null;
@@ -80,14 +81,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.setItem('token', jwt);
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('role', JSON.stringify(role))
-    
     setRole(role);
     setUser(user);
     setJwt(jwt);
     setLoading(false); // Datos cargados
-    
-
   };
+
+const register = (jwt: string, user: { id: string; name: string; email: string} ) => { 
+  console.log('register desde contexto')
+  localStorage.setItem('token', jwt);
+  localStorage.setItem('user', JSON.stringify(user));
+  localStorage.setItem('role', JSON.stringify(role));
+  setRole(role);
+  setUser(user);
+  setJwt(jwt);
+  setLoading(false); // Datos cargados
+}
+
+
+
 
   // Función para logout
   const logout = () => {
@@ -98,7 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser , jwt, setJwt, login , logout, loading, role, setRole, cart, setCart}}>
+    <AuthContext.Provider value={{ user, setUser , jwt, setJwt, login , logout, loading, role, setRole, cart, setCart, register}}>
       {children}
     </AuthContext.Provider>
   );
