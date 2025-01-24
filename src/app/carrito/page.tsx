@@ -6,9 +6,37 @@ import Image from "next/image";
 import { ProtectorRutas } from "@/components/shared/ProtectorRutas/ProtectorRutas";
 import { AuthContext } from "@/Context/auth-context";
 import { updateCartQuantity, removeCartItem } from "@/services/cartService";
+import { handlePayment } from "@/services/handlePayment";
+import { CheckoutButton } from "@/components/shared/CheckoutButton/CheckoutButton";
+
+
+
+// import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+
+// const publicKey = process.env.NEXT_PUBLIC_MP_PUBLIC_KEY;
+
+
+
+
+
 
 export default function Carrito() {
   const authContext = useContext(AuthContext);
+
+  const [loading, setLoading] = useState(true);
+
+  // Este useEffect carga el SDK de Mercado Pago solo cuando la página de carrito se carga
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://sdk.mercadopago.com/js/v2";
+    script.onload = () => setLoading(false); // Cuando el script se haya cargado, cambia el estado de carga
+    document.body.appendChild(script);
+
+    return () => {
+      // Limpiar el script cuando se desmonte la página
+      document.body.removeChild(script);
+    };
+  }, []);
 
   if (!authContext) {
     throw new Error("AuthContext must be used within an AuthProvider");
@@ -53,9 +81,16 @@ export default function Carrito() {
     const updatedCart = { ...localCart, items: updatedItems };
 
     const localUserIdCart: string = localCart.userId;
-    
 
-    console.log('datos desde function update',"localUserIdCart", localUserIdCart, "dishId ", dishId, "change", change);
+    console.log(
+      "datos desde function update",
+      "localUserIdCart",
+      localUserIdCart,
+      "dishId ",
+      dishId,
+      "change",
+      change
+    );
     // Actualizar el carrito en la base de datos
     updateCartQuantity(localUserIdCart, dishId, change);
 
@@ -170,9 +205,16 @@ export default function Carrito() {
                     <span className="text-black">${total.toFixed(2)}</span>
                   </div>
                 </div>
-                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg mt-4 hover:bg-blue-700 transition duration-300">
+                <button
+                  onClick={handlePayment}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg mt-4 hover:bg-blue-700 transition duration-300"
+                >
                   Proceder al Pago
                 </button>
+
+                <h1>Carrito de Compras</h1>
+                <CheckoutButton />
+                
               </div>
             </div>
           </div>
@@ -180,4 +222,5 @@ export default function Carrito() {
       </div>
     </ProtectorRutas>
   );
-}
+  }; 
+

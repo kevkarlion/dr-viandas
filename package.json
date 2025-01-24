@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mercadopago/sdk-react": "^0.0.23",
     "axios": "^1.7.9",
     "classnames": "^2.5.1",
     "lucide-react": "^0.468.0",

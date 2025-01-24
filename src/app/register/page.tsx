@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { AuthContext } from "@/Context/auth-context"
 import axios from 'axios'  // Importar Axios
 
+
 export default function RegistroPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
