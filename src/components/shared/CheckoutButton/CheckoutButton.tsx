@@ -1,34 +1,39 @@
+'use client'
 import { useState } from 'react';
 import axios from 'axios';
 
-export function CheckoutButton() {
+export function CheckoutButton({items}) {
   const [loading, setLoading] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState('');  // Estado para almacenar la URL
 
+  console.log('carrito desde componente', items);
   const handlePayment = async () => {
     setLoading(true);
 
-    const items = [
-      {
-        title: 'Producto de prueba',
-        quantity: 1,
-        unit_price: 1000, // El precio de tu producto
-      },
-    ];
+    const preference = {
+      body: {
+        items: items.map((item)=>({
+          title: item.name,
+          quantity: item.quantity,
+          unit_price: item.price
+        }))
+      }
+    }
 
-    const data = {
-      items,
-    };
+    console.log('data desde el front antes de enviar', preference)
 
     try {
-      // Realizamos la petición POST al backend
-      const response = await axios.post('http://localhost:5000/api/payments/create-payment', data, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log('datos desde servidor ',response.data.initPoint.init_point);
-      const  initPoint  = response.data.initPoint.init_point;
+      /// Realizamos la petición POST al backend
+      const response = await axios.post(
+        'http://localhost:5000/api/payments/create-payment', preference, 
+         { 
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+        );
+      console.log('datos desde servidor ',response.data?.initPoint);
+      const  initPoint  = response.data?.initPoint.initPoint;
 
       if (initPoint) {
         // Establece la URL del pago en el estado para mostrarla

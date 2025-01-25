@@ -213,7 +213,7 @@ export default function Carrito() {
                 </button>
 
                 <h1>Carrito de Compras</h1>
-                <CheckoutButton />
+                <CheckoutButton items={localCart.items}/>
                 
               </div>
             </div>
