@@ -18,10 +18,6 @@ interface CartDb {
   
 }
 
-
-
-
-
 // Definir los tipos para el contexto
 interface AuthContextType {
   user: { id: string; name: string; email: string } | null;
@@ -37,7 +33,6 @@ interface AuthContextType {
   cart: CartDb ;
   setCart: React.Dispatch<React.SetStateAction<CartDb>>;
 }
-
 
 // Crear el contexto
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -55,15 +50,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<string | null>('');
   const [cart, setCart] = useState<CartDb>({ _id: '', userId: '', items: [], name: '' });
-  
+
+
   // Recuperar el usuario y JWT del localStorage cuando la app se carga
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const storedJwt = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role');
     const storedCart = localStorage.getItem('cart');
-    
-
+ 
     console.log(storedUser)
     console.log(storedJwt)
 
@@ -97,8 +92,6 @@ const register = (jwt: string, user: { id: string; name: string; email: string} 
   setJwt(jwt);
   setLoading(false); // Datos cargados
 }
-
-
 
 
   // Función para logout

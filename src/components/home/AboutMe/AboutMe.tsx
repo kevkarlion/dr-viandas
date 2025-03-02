@@ -33,7 +33,7 @@ export function AboutMe(): JSX.Element {
   };
 
   return (
-    <section id="about-me" className="py-20 bg-gray-100">
+    <section id="about-me" className="py-20 bg-gray-100 scroll-mt-20">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/3 mb-8 md:mb-0">
@@ -47,11 +47,11 @@ export function AboutMe(): JSX.Element {
               />
             </div>
           </div>
-          <div className="md:w-2/3 md:pl-8">
-            <h2 className="text-3xl font-bold mb-4 text-black">
-              Chef María González
+          <div className="md:w-2/3 md:pl-8 px-2">
+            <h2 className="text-4xl font-bold mb-4 text-black font-playfair">
+              Darío Agustín Rodríguez
             </h2>
-            <p className="text-lg mb-6 text-black">
+            <p className="text-[1rem] mb-6 text-black font-poppins">
               Con más de 15 años de experiencia en la industria culinaria, la
               Chef María González ha dedicado su carrera a crear experiencias
               gastronómicas únicas y saludables. Graduada de Le Cordon Bleu,
@@ -59,14 +59,14 @@ export function AboutMe(): JSX.Element {
               ofrecer viandas que no solo son deliciosas, sino también
               nutritivas.
             </p>
-            <p className="text-lg mb-6 text-black">
+            <p className="text-[1rem] mb-6 text-black">
               Su pasión por los ingredientes frescos y locales se refleja en
               cada plato que prepara. María cree firmemente en la filosofía de
               que una buena comida no solo alimenta el cuerpo, sino también el
               alma.
             </p>
             <div className="mt-8">
-              <h3 className="text-2xl font-semibold mb-4 text-black">
+              <h3 className="text-4xl font-bold mb-4 px-2 text-black font-playfair">
                 Galería de Platillos y Trabajo
               </h3>
               <Slider {...carouselSettings}>
@@ -88,9 +88,9 @@ export function AboutMe(): JSX.Element {
         <div className="flex w-full justify-center items-center mt-14">
             <Button
             size="lg"
-            className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-6 rounded-lg"
+            className="bg-ctaAmarilloLuminoso hover:bg-amarilloResaltado text-black font-semibold py-3 px-6 rounded-lg"
             >
-            <a href="#contact">Contáctanos Ahora</a>
+            <a href="#contact" className="font-poppins text-[1rem]">Contáctanos ahora</a>
             </Button>
         </div>
       </div>

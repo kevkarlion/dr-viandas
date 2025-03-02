@@ -16,7 +16,7 @@ export default function RegistroPage() {
   if (!authContext) {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
-  const {  setCart, register } = authContext;
+  const { setCart, register } = authContext;
 
   const [confirmPassword, setConfirmPassword] = useState('')
   const router = useRouter()

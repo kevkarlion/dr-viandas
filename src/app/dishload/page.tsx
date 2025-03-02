@@ -7,7 +7,6 @@ const Dishload = () => {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    // Asegúrate de que este código solo se ejecute en el cliente
     const savedToken = localStorage.getItem("token");
     setToken(savedToken);
   }, []);
@@ -15,8 +14,9 @@ const Dishload = () => {
   const [name, setName] = useState<string>("");
   const [price, setPrice] = useState<number>(0);
   const [description, setDescription] = useState<string>("");
+  const [disponible, setDisponible] = useState<string>("");
   const [ingredients, setIngredients] = useState<string>("");
-  const [photo, setPhoto] = useState<string>("");
+  const [photo, setPhoto] = useState<File | null>(null);
   const [available, setAvailable] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,34 +25,29 @@ const Dishload = () => {
     e.preventDefault();
     setLoading(true);
 
-    const dishData = {
-      name,
-      price,
-      description,
-      ingredients: ingredients
-        .split(",")
-        .map((ingredient) => ingredient.trim()),
-      photo,
-      available,
-    };
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("price", price.toString());
+    formData.append("description", description);
+    formData.append("disponible", disponible);
+    formData.append("available", available.toString());
+    formData.append("ingredients", JSON.stringify(ingredients.split(",").map((ingredient) => ingredient.trim())));
+    if (photo) formData.append("imagen", photo);
 
     try {
-      await axios.post(
-        "http://localhost:5000/api/dish",
-        dishData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.post("http://localhost:5000/api/dish/loadDish", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
       alert("Platillo creado con éxito");
-      // Limpiar los campos del formulario
       setName("");
       setPrice(0);
+      setDisponible("");
       setDescription("");
       setIngredients("");
-      setPhoto("");
+      setPhoto(null);
     } catch (err: any) {
       setError(err?.response?.data?.message || "Error al crear el platillo");
     } finally {
@@ -62,82 +57,79 @@ const Dishload = () => {
 
   return (
     <ProtectorRutasRole>
-      <div className="max-w-lg my-32 mx-7 p-6 bg-white shadow-lg rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Cargar Platillo</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Nombre del Platillo
-            </label>
+      <div className="max-w-lg my-32 mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200">
+        <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Cargar Platillo</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Nombre del Platillo</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full p-2 border border-gray-300 rounded-md text-black"
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 text-black"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Disponible hasta:</label>
+            <textarea
+              value={disponible}
+              onChange={(e) => setDisponible(e.target.value)}
+              required
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 text-black"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Precio
-            </label>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Precio</label>
             <input
               type="number"
               value={price}
               onChange={(e) => setPrice(Number(e.target.value))}
               required
-              className="w-full p-2 border border-gray-300 rounded-md text-black"
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 text-black"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Descripción
-            </label>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Descripción</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
-              className="w-full p-2 border border-gray-300 rounded-md text-black"
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 text-black"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium  text-black">
-              Ingredientes
-            </label>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Ingredientes</label>
             <input
               type="text"
               value={ingredients}
               onChange={(e) => setIngredients(e.target.value)}
               required
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 text-black"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Foto (URL)
-            </label>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Foto</label>
             <input
-              type="text"
-              value={photo}
-              onChange={(e) => setPhoto(e.target.value)}
+              type="file"
+              onChange={(e) => setPhoto(e.target.files ? e.target.files[0] : null)}
               required
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 text-black"
             />
           </div>
 
-          <div className="flex items-center">
-            <label className="text-sm font-medium text-gray-700">
-              Disponible
-            </label>
+          <div className="flex items-center mb-4">
+            <label className="text-sm font-medium text-gray-700 mr-2">Disponible</label>
             <input
               type="checkbox"
               checked={available}
               onChange={() => setAvailable(!available)}
-              className="ml-2"
+              className="ml-2 h-4 w-4"
             />
           </div>
 
@@ -146,7 +138,7 @@ const Dishload = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-4 py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400"
+            className="w-full mt-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 disabled:bg-gray-400"
           >
             {loading ? "Cargando..." : "Crear Platillo"}
           </button>

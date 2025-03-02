@@ -6,18 +6,8 @@ import Image from "next/image";
 import { ProtectorRutas } from "@/components/shared/ProtectorRutas/ProtectorRutas";
 import { AuthContext } from "@/Context/auth-context";
 import { updateCartQuantity, removeCartItem } from "@/services/cartService";
-import { handlePayment } from "@/services/handlePayment";
+
 import { CheckoutButton } from "@/components/shared/CheckoutButton/CheckoutButton";
-
-
-
-// import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
-
-// const publicKey = process.env.NEXT_PUBLIC_MP_PUBLIC_KEY;
-
-
-
-
 
 
 export default function Carrito() {
@@ -205,14 +195,8 @@ export default function Carrito() {
                     <span className="text-black">${total.toFixed(2)}</span>
                   </div>
                 </div>
-                <button
-                  onClick={handlePayment}
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg mt-4 hover:bg-blue-700 transition duration-300"
-                >
-                  Proceder al Pago
-                </button>
-
-                <h1>Carrito de Compras</h1>
+             
+                
                 <CheckoutButton items={localCart.items}/>
                 
               </div>
