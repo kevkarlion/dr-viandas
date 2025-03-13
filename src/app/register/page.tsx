@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { AuthContext } from "@/Context/auth-context"
 import axios from 'axios'  // Importar Axios
 
+
 export default function RegistroPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -15,7 +16,7 @@ export default function RegistroPage() {
   if (!authContext) {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
-  const {  setCart, register } = authContext;
+  const { setCart, register } = authContext;
 
   const [confirmPassword, setConfirmPassword] = useState('')
   const router = useRouter()

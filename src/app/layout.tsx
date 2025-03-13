@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <AuthProvider>
-      <html lang="en">
+      <html lang="en" className="scroll-smooth bg-white">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >

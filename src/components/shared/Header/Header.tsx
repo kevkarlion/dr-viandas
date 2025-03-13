@@ -1,136 +1,122 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, ShoppingCart, User } from "lucide-react";
-import { JSX, useState, useContext,  } from "react";
+import { Menu, ShoppingCart, User, X } from "lucide-react";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "@/Context/auth-context";
 
-export function Header(): JSX.Element {
-
+export function Header() {
   const authContext = useContext(AuthContext);
   if (!authContext) {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
-  const { jwt, logout, user } = authContext;
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-
   
- 
-  
+  const { user, logout, cart, setCart } = authContext; // Asegúrate de que `setCart` esté disponible en el contexto
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState<string | number>("");
 
-// Muestra un estado de carga o nada mientras se cargan los datos
-  // if (loading) {
-  //   return <div>Loading...</div>; 
-  // }
- 
+  // Actualiza el conteo del carrito cuando cambie el estado del carrito
+  useEffect(() => {
+    setCartItemCount(cart.items.reduce((acc, item) => acc + item.quantity, 0));
+  }, [cart]);
+
+  // Resetear carrito cuando el usuario cierre sesión
+  const handleLogout = () => {
+    logout();
+    setCart({ _id: cart._id, userId: cart.userId, name: cart.name, items: [] }); // Vacía el carrito al cerrar sesión
+  };
+
   return (
-    <header className="bg-green-600 text-white fixed top-0 w-full z-50">
+    <header className="bg-verdePrincipal text-white fixed top-0 w-full z-50">
       <div className="container mx-auto px-4 py-6 flex justify-between items-center">
         {/* Logo */}
-        <Link href="/" className="text-2xl font-bold">
-          Viandas Deliciosas
+        <Link href="/" className="lg:text-3xl text-2xl font-playfair font-bold">
+          DR Viandas
         </Link>
 
         {/* Desktop Menu */}
-        <nav className="hidden md:flex space-x-4">
-          <Link href="#menu" className="hover:underline">
-            Menú
-          </Link>
-          <Link href="#features" className="hover:underline">
-            Características
-          </Link>
-          <Link href="#testimonials" className="hover:underline">
-            Testimonios
-          </Link>
-          <Link href="#contact" className="hover:underline">
-            Contacto
-          </Link>
+        <nav className="hidden md:flex space-x-8 font-lora font-bold text-xl">
+          <Link href="#menu" className="hover:underline">Menú</Link>
+          <Link href="#about-me" className="hover:underline">Sobre mí</Link>
+          <Link href="#testimonials" className="hover:underline">Testimonios</Link>
+          <Link href="#contacto" className="hover:underline">Contacto</Link>
         </nav>
 
-        {/* User Controls */}
+        {/* User Controls (Desktop) */}
         <div className="hidden md:flex items-center space-x-4">
-          <Link href='/carrito'>
-            <button className="hover:text-gray-200">
-              <ShoppingCart size={24} />
-            </button>
+          <Link href="/carrito" className="relative">
+            <ShoppingCart size={24} className="hover:text-gray-200" />
+            {typeof cartItemCount === "number" && cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                {cartItemCount}
+              </span>
+            )}
           </Link>
-          <Link href='/profile'>
-            <button className="hover:text-gray-200">
-              <User size={24} />
-            </button>
-          </Link>
-          {jwt ? (
+          <Link href="/profile"><User size={24} className="hover:text-gray-200" /></Link>
+          {user ? (
             <>
-              <span className="text-white">{user.name}</span>
+              <span className="text-white">{user?.name}</span>
               <button
-                onClick={logout}
-                className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
+                onClick={handleLogout}
+                className="bg-ctaAmarilloLuminoso text-black font-poppins px-4 py-2 rounded hover:bg-amarilloResaltado"
               >
                 Cerrar Sesión
               </button>
             </>
           ) : (
-            <Link
-              href="/login"
-              className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
-            >
+            <Link href="/login" className="bg-naranjaComplementario text-black px-4 py-2 rounded hover:naranjaComplementario">
               Iniciar Sesión / Registrarse
             </Link>
           )}
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          className="md:hidden"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          <Menu size={24} />
+        <button className="md:hidden" onClick={() => setIsMenuOpen(true)}>
+          <Menu size={28} />
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="bg-green-700 md:hidden">
-          <nav className="space-y-2 p-4">
-            <Link href="#menu" className="block hover:underline">
-              Menú
-            </Link>
-            <Link href="#features" className="block hover:underline">
-              Características
-            </Link>
-            <Link href="#testimonials" className="block hover:underline">
-              Testimonios
-            </Link>
-            <Link href="#contact" className="block hover:underline">
-              Contacto
-            </Link>
-            <div className="flex items-center space-x-4 mt-4">
-              <button className="hover:text-gray-200">
-                <ShoppingCart size={24} />
-              </button>
-              <button className="hover:text-gray-200">
-                <User size={24} />
-              </button>
-              {user ? (
-                <>
-                  <span className="text-white">{user.name}</span>
-                  <button
-                    onClick={logout}
-                    className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
-                  >
-                    Cerrar Sesión
-                  </button>
-                </>
-              ) : (
-                <Link
-                  href="/login"
-                  className="bg-white text-green-600 px-4 py-2 rounded hover:bg-gray-100"
-                >
-                  Iniciar Sesión / Registrarse
-                </Link>
-              )}
-            </div>
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center z-50 transition-transform">
+          <button className="absolute top-6 right-6 text-white" onClick={() => setIsMenuOpen(false)}>
+            <X size={32} />
+          </button>
+
+          <nav className="space-y-6 text-center text-2xl font-lora font-bold">
+            <Link href="#menu" className="block text-white hover:text-ctaAmarilloLuminoso" onClick={() => setIsMenuOpen(false)}>Menú</Link>
+            <Link href="#about-me" className="block text-white hover:text-ctaAmarilloLuminoso" onClick={() => setIsMenuOpen(false)}>Sobre mí</Link>
+            <Link href="#testimonials" className="block text-white hover:text-ctaAmarilloLuminoso" onClick={() => setIsMenuOpen(false)}>Testimonios</Link>
+            <Link href="#contacto" className="block text-white hover:text-ctaAmarilloLuminoso" onClick={() => setIsMenuOpen(false)}>Contacto</Link>
           </nav>
+
+          <div className="flex items-center space-x-6 mt-6">
+            <Link href="/carrito" className="relative">
+              <ShoppingCart size={28} className="text-white hover:text-ctaAmarilloLuminoso" />
+              {Number(cartItemCount) > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                  {cartItemCount}
+                </span>
+              )}
+            </Link>
+            <Link href="/profile"><User size={28} className="text-white hover:text-ctaAmarilloLuminoso" /></Link>
+          </div>
+
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="mt-6 bg-ctaAmarilloLuminoso text-black px-6 py-3 rounded hover:bg-amarilloResaltado"
+            >
+              Cerrar Sesión
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="mt-6 bg-white text-green-600 px-6 py-3 rounded hover:bg-gray-100"
+            >
+              Iniciar Sesión / Registrarse
+            </Link>
+          )}
         </div>
       )}
     </header>

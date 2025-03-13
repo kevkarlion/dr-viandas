@@ -1,15 +1,17 @@
 import axios, { AxiosError } from "axios";
 
+// Configuración global para incluir cookies en las solicitudes
+type RequestConfig = {
+  withCredentials: true;
+};
+
+const config: RequestConfig = {
+  withCredentials: true,
+};
+
 // Actualizar la cantidad de un artículo en el carrito
 export const updateCartQuantity = async (userId: string, dishId: string, change: number) => {
   console.log('userId', userId, 'dishId', dishId, 'quantity', change);
-
-  const token = localStorage.getItem('token'); // Obtén el token del localStorage
-
-  if (!token) {
-    console.error('No se encontró el token en el localStorage.');
-    throw new Error('Usuario no autenticado.');
-  }
 
   try {
     const response = await axios.patch(
@@ -19,11 +21,7 @@ export const updateCartQuantity = async (userId: string, dishId: string, change:
         dishId,
         change,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // Envía el token en el encabezado
-        },
-      }
+      config // Se envían las cookies con la petición
     );
     return response.data;
   } catch (error) {
@@ -38,22 +36,13 @@ export const updateCartQuantity = async (userId: string, dishId: string, change:
 
 // Eliminar un artículo del carrito
 export const removeCartItem = async (userId: string, dishId: string) => {
-  const token = localStorage.getItem('token'); // Obtén el token del localStorage
-
-  console.log('datos desde el front','userId:',userId,'dishId:',dishId);
-
-  if (!token) {
-    console.error('No se encontró el token en el localStorage.');
-    throw new Error('Usuario no autenticado.');
-  }
+  console.log('datos desde el front', 'userId:', userId, 'dishId:', dishId);
 
   try {
     const response = await axios.delete(
       `http://localhost:5000/api/cart/remove`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`, // Envía el token en el encabezado
-        },
+        ...config, // Se envían las cookies con la petición
         params: {
           userId,
           dishId,

@@ -10,29 +10,28 @@ export  function Hero(): JSX.Element{
   
   return (
     <section
-      className="relative bg-cover bg-center py-20 text-white"
+      className="relative bg-cover bg-center py-20 bg-white "
       style={{
         backgroundImage: "url('/images/hero-background.jpg')", // Cambia la ruta según la ubicación de tu imagen
       }}
     >
       {/* Fondo Oscuro Transparente */}
-      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      <div className="absolute inset-0 bg-white bg-opacity-50"></div>
 
       {/* Contenido Principal */}
-      <div className="relative container mx-auto px-4 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold mb-4">
-          Viandas que Nutren y Sorprenden
+      <div className="relative container mx-auto px-4 text-center pt-28 pb-10">
+        <h1 className="text-4xl md:text-6xl font-bold mb-4 font-playfair text-black">
+        Viandas caseras, listas para disfrutar
         </h1>
-        <p className="text-xl md:text-2xl mb-8">
-          Descubre la comodidad de recibir platos saludables y deliciosos,
-          preparados especialmente para ti.
+        <p className="text-xl md:text-2xl mb-8 font-lora text-black px-8 lg:!px-38">
+        Comida rica, casera y saludable, lista para vos todos los jueves. Pedí con anticipación y disfrutá sin complicaciones.
         </p>
         <Button
           size="lg"
           
-          className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-6 rounded-lg"
+          className="bg-ctaAmarilloLuminoso hover:bg-amarilloResaltado text-black font-poppins py-3 px-6 rounded-lg text-[1rem]"
         >
-          <a href="#contact">Contáctanos Ahora</a>
+          <a href="#menu">Pedí la tuya</a>
         </Button>
       </div>
     </section>
