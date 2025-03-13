@@ -9,7 +9,17 @@ import { AuthContext } from "@/Context/auth-context"
 initMercadoPago('APP_USR-ccde7f56-87cf-4c81-aa68-716231206997');
 
 
-export function CheckoutButton({ items }) {
+interface Item {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+interface CheckoutButtonProps {
+  items: Item[];
+}
+
+export function CheckoutButton({ items }: CheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState('');  // Estado para almacenar la URL
   const [preferenceID, setPreferenceID] = useState('');

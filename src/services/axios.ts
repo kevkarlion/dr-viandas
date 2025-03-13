@@ -1,20 +1,21 @@
-import axios from 'axios';
+import axios from "axios";
+import Cookies from "js-cookie";
 
 // Crea una instancia de Axios con configuraciones predeterminadas
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/',  // La URL base de tu API (ajústala a tu servidor)
+  baseURL: "http://localhost:5000/api", // Ajusta la URL base de tu backend
   headers: {
-    'Content-Type': 'application/json', // Configura el tipo de contenido que tu API espera
+    "Content-Type": "application/json",
   },
+  withCredentials: true, // ✅ Habilita el envío de cookies en las solicitudes
 });
 
-// Agregar un interceptor para manejar la autenticación (si es necesario)
+// Interceptor para agregar el token desde las cookies
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Aquí puedes agregar el token de autenticación en los headers
-    const token = localStorage.getItem('token'); // O donde guardes tu token
+    const token = Cookies.get("token"); // 🔥 Obtiene el token desde las cookies
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`; // ✅ Envía el token en los headers
     }
     return config;
   },

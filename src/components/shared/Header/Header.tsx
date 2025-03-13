@@ -10,16 +10,14 @@ export function Header() {
   if (!authContext) {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
-  const { jwt, logout, user, cart } = authContext;
+  const { user, logout, cart } = authContext;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartItemCount, setCartItemCount] = useState(3); // Simulación de productos en el carrito
+  const [cartItemCount, setCartItemCount] = useState<string | number>(''); // Simulación de productos en el carrito
   
-  //conteo de platillos en icon de carrito
-  useEffect(()=>{
-    setCartItemCount(cart.items.reduce((acc, item) => acc + item.quantity, 0))
-  }, [cart])
-  console.log('cartItemCount',cartItemCount)
-
+  // Conteo de platillos en icono del carrito
+  useEffect(() => {
+    setCartItemCount(cart.items.reduce((acc, item) => acc + item.quantity, 0));
+  }, [cart]);
 
   return (
     <header className="bg-verdePrincipal text-white fixed top-0 w-full z-50">
@@ -41,14 +39,14 @@ export function Header() {
         <div className="hidden md:flex items-center space-x-4">
           <Link href="/carrito" className="relative">
             <ShoppingCart size={24} className="hover:text-gray-200" />
-            {cartItemCount > 0 && (
+            {typeof cartItemCount === 'number' && cartItemCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                 {cartItemCount}
               </span>
             )}
           </Link>
           <Link href="/profile"><User size={24} className="hover:text-gray-200" /></Link>
-          {jwt ? (
+          {user ? (
             <>
               <span className="text-white">{user?.name}</span>
               <button
@@ -88,7 +86,7 @@ export function Header() {
           <div className="flex items-center space-x-6 mt-6">
             <Link href="/carrito" className="relative">
               <ShoppingCart size={28} className="text-white hover:text-ctaAmarilloLuminoso" />
-              {cartItemCount > 0 && (
+              {Number(cartItemCount) > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                   {cartItemCount}
                 </span>
@@ -97,7 +95,7 @@ export function Header() {
             <Link href="/profile"><User size={28} className="text-white hover:text-ctaAmarilloLuminoso" /></Link>
           </div>
 
-          {jwt ? (
+          {user ? (
             <button
               onClick={logout}
               className="mt-6 bg-ctaAmarilloLuminoso text-black px-6 py-3 rounded hover:bg-amarilloResaltado"

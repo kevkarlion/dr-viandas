@@ -4,7 +4,8 @@ import React, { useState, useContext } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/Context/auth-context";
-import axios, { AxiosError } from "axios";  // Importa axios
+import axios, { AxiosError } from "axios";
+
 
 interface ErrorResponse {
   response: {
@@ -21,60 +22,49 @@ export default function LoginPage() {
   const router = useRouter();
   const setCart = authContext?.setCart;
   const login = authContext?.login;
- 
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Usando axios para hacer la petición POST
       const response = await axios.post(
-        'http://localhost:5000/api/auth/login', 
-        {
-          email, 
-          password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json", // Aseguramos que el tipo de contenido sea JSON
-          },
-        }
+        "http://localhost:5000/api/auth/login", 
+        { email, password },
+        { withCredentials: true } // Permite el envío de cookies
       );
 
-      // Verificar si la respuesta es exitosa
       if (response.status === 200) {
-        console.log('respuesta de login',response.data)
-        const token = response.data.token;
+        console.log("Inicio de sesión exitoso");
+        
+      
 
-        //carrito cargado en el local storage y en el contexto de autenticación al inicar sesión
-        if (setCart) {
-          setCart(response.data.cart);
-          localStorage.setItem('cart', JSON.stringify(response.data.cart));
-          console.log(response.data.cart)
-        }
-        console.log('carrito', response.data.cart);
         const userData = {
           id: response.data.user.id,
           name: response.data.user.name,
           email: response.data.user.email,
+         
         };
-        const roleData = response.data.user.role
-        
-        // Si el contexto de autenticación está disponible, actualízalo
+        console.log("userData", userData);
+        const roleData = response.data.user.role;
+
         if (login) {
-          login(token, userData, roleData); // Actualiza el contexto con los datos del usuario
+          login(userData, roleData);
         }
-        console.log("Inicio de sesión exitoso");
-        console.log('rol', roleData);
-        // Redirigir al usuario a la página principal
+
+        if (setCart) {
+          setCart(response.data.cart);
+          localStorage.setItem("cart", JSON.stringify(response.data.cart));
+        }
+
         router.push("/dashboard");
       } else {
         console.error("Error al iniciar sesión: Código de estado inesperado", response.status);
-        alert('Hubo un error al iniciar sesión. Por favor, inténtalo de nuevo.');
+        alert("Hubo un error al iniciar sesión. Por favor, inténtalo de nuevo.");
       }
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
       console.error("Error al iniciar sesión:", axiosError);
-     
     }
   };
 
@@ -89,10 +79,7 @@ export default function LoginPage() {
         </p>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Correo electrónico
             </label>
             <input
@@ -105,10 +92,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium  mb-1 text-black"
-            >
+            <label htmlFor="password" className="block text-sm font-medium mb-1 text-black">
               Contraseña
             </label>
             <input
@@ -128,7 +112,7 @@ export default function LoginPage() {
           </button>
         </form>
         <p className="mt-4 text-sm text-center text-gray-600">
-          ¿No tienes una cuenta?{" "}
+          ¿No tienes una cuenta? {" "}
           <Link href="/register" className="text-blue-600 hover:underline">
             Regístrate aquí
           </Link>
