@@ -1,14 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import { ProtectorRutasRole } from "@/components/shared/ProtectorRutas/ProtectorRutasRole";
 
 const Dishload = () => {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("token");
-    setToken(savedToken);
+    const savedToken = Cookies.get("token"); // Obtener el token desde las cookies
+    setToken(savedToken || null);
   }, []);
 
   const [name, setName] = useState<string>("");
@@ -37,7 +38,7 @@ const Dishload = () => {
     try {
       await axios.post("http://localhost:5000/api/dish/loadDish", formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Usamos el token de cookies
           "Content-Type": "multipart/form-data",
         },
       });
@@ -70,6 +71,7 @@ const Dishload = () => {
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 text-black"
             />
           </div>
+
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Disponible hasta:</label>
             <textarea
@@ -79,7 +81,6 @@ const Dishload = () => {
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 text-black"
             />
           </div>
-
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Precio</label>

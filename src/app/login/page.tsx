@@ -47,6 +47,7 @@ export default function LoginPage() {
         };
         console.log("userData", userData);
         const roleData = response.data.user.role;
+        console.log("roleData", roleData);
 
         if (login) {
           login(userData, roleData);

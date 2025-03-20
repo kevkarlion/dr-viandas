@@ -114,7 +114,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       sameSite: "Strict",
     });
     Cookies.set("role", role, { expires: 1, secure: true, sameSite: "Strict" });
-    Cookies.set("token", token, { expires: 1, secure: true, sameSite: "Strict" });
+    Cookies.set("token", token, {
+      expires: 1,
+      secure: true,
+      sameSite: "Strict",
+    });
 
     setUser(user);
     setRole(role);
@@ -158,7 +162,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     Cookies.remove("user");
     Cookies.remove("role");
     Cookies.remove("cart");
-    
+
     setUser(null);
     setRole(null);
     setCart({ _id: "", userId: "", items: [], name: "" });
