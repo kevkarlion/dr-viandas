@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useState, useEffect, ReactNode } from "react";
-import Cookies from "js-cookie"; // Importamos js-cookie
+import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 interface CartItem {
   dishId: string;
@@ -17,148 +18,119 @@ interface CartDb {
   name: string;
 }
 
-// Definir los tipos para el contexto
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
 interface AuthContextType {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  } | null;
-  setUser: React.Dispatch<
-    React.SetStateAction<{
-      id: string;
-      name: string;
-      email: string;
-    } | null>
-  >;
-  login: (
-    user: {
-      id: string;
-      name: string;
-      email: string;
-    },
-    role: string,
-    token: string // Agregamos el token como argumento
-  ) => void;
-  register: (
-    user: {
-      id: string;
-      name: string;
-      email: string;
-    },
-    role: string,
-    token: string
-  ) => void;
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  login: (user: User, role: string) => void;
+  register: (user: User, role: string) => void;
   logout: () => void;
   loading: boolean;
   role: string | null;
   setRole: React.Dispatch<React.SetStateAction<string | null>>;
   cart: CartDb;
   setCart: React.Dispatch<React.SetStateAction<CartDb>>;
+  checkAuth: () => Promise<void>;
 }
 
-// Crear el contexto
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Crear el proveedor del contexto
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Proveedor de contexto que envuelve la app
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<{
-    id: string;
-    name: string;
-    email: string;
-  } | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<string | null>("");
+  const [user, setUser] = useState<User | null>(null);
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
   const [cart, setCart] = useState<CartDb>({
     _id: "",
     userId: "",
     items: [],
     name: "",
   });
+  const router = useRouter();
 
-  // Recuperar los datos de las cookies al cargar la app
-  useEffect(() => {
-    const storedUser = Cookies.get("user");
-    const storedRole = Cookies.get("role");
-    const storedToken = Cookies.get("token");
-    const storedCart = Cookies.get("cart");
+  // Función estable con useCallback para evitar recreación en cada render
+  const checkAuth = useCallback(async () => {
+    setLoading(true);
+    try {
+      const storedUser = Cookies.get("user");
+      const storedRole = Cookies.get("role");
+      const storedCart = Cookies.get("cart");
 
-    if (storedUser && storedRole && storedToken && storedCart) {
-      setUser(JSON.parse(storedUser));
-      setRole(storedRole);
-      setCart(JSON.parse(storedCart));
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setRole(storedRole || null);
+        
+        if (storedCart) {
+          setCart(JSON.parse(storedCart));
+        }
+      } else {
+        setUser(null);
+        setRole(null);
+        setCart({ _id: "", userId: "", items: [], name: "" });
+      }
+    } catch (error) {
+      console.error("Error verifying auth:", error);
+      Cookies.remove("user");
+      Cookies.remove("role");
+      Cookies.remove("cart");
+      setUser(null);
+      setRole(null);
+    } finally {
+      setLoading(false);
+      if (initialLoad) setInitialLoad(false);
     }
-    setLoading(false); // Indica que los datos ya están cargados
+  }, [initialLoad]);
+
+  // Verificar autenticación solo en el montaje inicial
+  useEffect(() => {
+    if (initialLoad) {
+      checkAuth();
+    }
+  }, [checkAuth, initialLoad]);
+
+  // Sincronizar cart con cookies cuando cambie
+  useEffect(() => {
+    if (!initialLoad && (cart.items.length > 0 || (cart._id && cart.userId))) {
+      Cookies.set("cart", JSON.stringify(cart), {
+        expires: 1,
+        secure: true,
+        sameSite: "Strict",
+      });
+    }
+  }, [cart, initialLoad]);
+
+  const login = useCallback((user: User, role: string) => {
+    Cookies.set("user", JSON.stringify(user), {
+      expires: 1,
+      secure: true,
+      sameSite: "Strict",
+    });
+    Cookies.set("role", role, { 
+      expires: 1, 
+      secure: true, 
+      sameSite: "Strict" 
+    });
+
+    setUser(user);
+    setRole(role);
+    setLoading(false);
   }, []);
 
-  // Función para login (guarda los datos en cookies)
-  const login = (
-    user: {
-      id: string;
-      name: string;
-      email: string;
-    },
-    role: string,
-    token: string
-  ) => {
-    Cookies.set("user", JSON.stringify(user), {
-      expires: 1,
-      secure: true,
-      sameSite: "Strict",
-    });
-    Cookies.set("role", role, { expires: 1, secure: true, sameSite: "Strict" });
-    Cookies.set("token", token, {
-      expires: 1,
-      secure: true,
-      sameSite: "Strict",
-    });
+  const register = useCallback((user: User, role: string) => {
+    login(user, role);
+  }, [login]);
 
-    setUser(user);
-    setRole(role);
-    setLoading(false);
-  };
-
-  // Función para registrar usuario (similar al login)
-  const register = (
-    user: {
-      id: string;
-      name: string;
-      email: string;
-    },
-    role: string,
-    token: string
-  ) => {
-    Cookies.set("user", JSON.stringify(user), {
-      expires: 1,
-      secure: true,
-      sameSite: "Strict",
-    });
-    Cookies.set("role", role ?? "", {
-      expires: 1,
-      secure: true,
-      sameSite: "Strict",
-    });
-    Cookies.set("token", token, {
-      expires: 1,
-      secure: true,
-      sameSite: "Strict",
-    });
-
-    setUser(user);
-    setRole(role);
-    setLoading(false);
-  };
-
-  // Función para logout (elimina las cookies)
-  const logout = () => {
-    Cookies.remove("token");
+  const logout = useCallback(() => {
     Cookies.remove("user");
     Cookies.remove("role");
     Cookies.remove("cart");
@@ -166,7 +138,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
     setRole(null);
     setCart({ _id: "", userId: "", items: [], name: "" });
-  };
+    router.push("/");
+  }, [router]);
 
   return (
     <AuthContext.Provider
@@ -181,6 +154,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         cart,
         setCart,
         register,
+        checkAuth,
       }}
     >
       {children}

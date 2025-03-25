@@ -29,7 +29,7 @@ export const SingleMenu: React.FC = () => {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
 
-  const { user, cart, setCart } = authContext;
+  const { user, setCart } = authContext;
 
   useEffect(() => {
     const fetchDishes = async () => {
